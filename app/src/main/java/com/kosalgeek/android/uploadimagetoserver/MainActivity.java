@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     //Declarando los Image View de los iconos
     ImageView ivCamera, ivGallery, ivUpload, ivImage;
 
-    //Declarando la libreria de photoutil del author
+    //Declarando la libreria de photoutil y G.Photo del author
     CameraPhoto cameraPhoto;
     GalleryPhoto galleryPhoto;
 
@@ -46,8 +46,10 @@ public class MainActivity extends AppCompatActivity {
     final int CAMERA_REQUEST = 13323;
     final int GALLERY_REQUEST = 22131;
 
+    //Declaramos esta variable para utilizarla en el ivUpload.setOnclickListener
     String selectedPhoto;
 
+    //Declaracion del tipo editText para luego editar la ip en patantalla
     EditText etIpAddress;
 
 
@@ -68,14 +70,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+        //Para editar la barra donde pondremos nuestro ip
         etIpAddress = (EditText)findViewById(R.id.etIpAddress);
 
-        //El contexto podria ser this, pero si estamos usando fragments es asi:
+        //El contexto podria ser this
         cameraPhoto = new CameraPhoto(getApplicationContext());
         galleryPhoto = new GalleryPhoto(getApplicationContext());
 
-        //Con r.id.ivCamara buscamos por el id en el xml
+        //Con r.id.ivCamara buscamos por el id el elemento en el content_main.xml
         ivImage = (ImageView)findViewById(R.id.ivImage);
         ivCamera = (ImageView)findViewById(R.id.ivCamera);
         ivGallery = (ImageView)findViewById(R.id.ivGallery);
@@ -85,8 +87,8 @@ public class MainActivity extends AppCompatActivity {
         ivCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*Aqui usaremos una libreria sugerida por el creador de PhotoUtil.
-                  Existe un gran codigo atras de esta libreria, basicamente es para usar la camara
+                /*Aqui usaremos una libreria sugerida por el creador Oum.
+                  Existe un gran codigo atras de esta libreria, basicamente es para usar la camara.
                   Cuando abres la camara y luego la cierras quieres un resultado de vuelta, esto
                   lo haremos afuera del onCreate.
                   Esto es startActivity FOR RESULT*/
@@ -103,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         ivGallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Al clickear el gallery iniciamos la actividad y utilizamos el codigo de GRequest
+                //Al clickear el gallery iniciamos la actividad y utilizando Gallery Request
                 startActivityForResult(galleryPhoto.openGalleryIntent(), GALLERY_REQUEST);
             }
         });
@@ -117,19 +119,25 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-
                 try {
+                    //Convertimos a bitmap usando el loader de Oum, pero mas grande (depende de los requerimientos)
                     Bitmap bitmap = ImageLoader.init().from(selectedPhoto).requestSize(1024, 1024).getBitmap();
+                    //Encodeamos ese bitmap a un string usando la libreria de Oum
                     String encodedImage = ImageBase64.encode(bitmap);
+                    //Creamos un log de dicho string para verlo en consola (es gigante)
                     Log.d(TAG, encodedImage);
 
+                    //El hashmap es como un arreglo
                     HashMap<String, String> postData = new HashMap<String, String>();
+                    //El parametro "image" tiene que ser el mismo que en el archivo.php
                     postData.put("image", encodedImage);
 
+                    //De la libreria de Oum
                     PostResponseAsyncTask task = new PostResponseAsyncTask(MainActivity.this, postData, new AsyncResponse() {
                         @Override
                         public void processFinish(String s) {
                             Log.d(TAG, s);
+                            //Si contiene ese string en algun lado. Es diferente a == x
                             if(s.contains("uploaded_success")){
                                 Toast.makeText(getApplicationContext(), "Image Uploaded Successfully.",
                                         Toast.LENGTH_SHORT).show();
@@ -141,9 +149,13 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                     });
-                    String ip = etIpAddress.getText().toString();
-                    task.execute("http://" +ip + "/news/upload.php");
 
+                    //Para modificar la barra de ip en la pantalla inicial
+                    String ip = etIpAddress.getText().toString();
+                    //Este es mi localhost en la carpeta news esta el .php
+                    task.execute("http://"+ip+"/news/upload.php");
+
+                    //Distintas excepciones.
                     task.setEachExceptionsHandler(new EachExceptionsHandler() {
                         @Override
                         public void handleIOException(IOException e) {
@@ -170,11 +182,10 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
 
-
                 } catch (FileNotFoundException e) {
                     Toast.makeText(getApplicationContext(),
                             "Something Wrong while encoding photos", Toast.LENGTH_SHORT).show();
-                }
+                    }
 
             }
         });
@@ -186,12 +197,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(resultCode == RESULT_OK){
             if(requestCode == CAMERA_REQUEST){
-                //Al ejecutar obtenemos en consola el log (buscar por MainA...)
                 String photoPath = cameraPhoto.getPhotoPath();
-                //Obtenido de la libreria de OUM para poner la imagen como preview en la estrella
+                //Obtenido de la libreria de Oum para poner la imagen como preview en la estrella
                 selectedPhoto = photoPath;
                 Bitmap bitmap = null;
                 try {
+                    //modifica la imagen para que no sea tan grande en el recuadro
                     bitmap = ImageLoader.init().from(photoPath).requestSize(512, 512).getBitmap();
                     ivImage.setImageBitmap(getRotatedBitmap(bitmap, 90));
                 } catch (FileNotFoundException e) {
@@ -216,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
+    //9re exifutil.java - Libreria para rotar la imagen que reemplaza la estrella
     private Bitmap getRotatedBitmap(Bitmap source, float angle){
         Matrix matrix = new Matrix();
         matrix.postRotate(angle);
