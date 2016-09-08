@@ -23,6 +23,7 @@ import com.kosalgeek.genasync12.AsyncResponse;
 import com.kosalgeek.genasync12.EachExceptionsHandler;
 import com.kosalgeek.genasync12.PostResponseAsyncTask;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -141,6 +142,8 @@ public class MainActivity extends AppCompatActivity {
                             if(s.contains("uploaded_success")){
                                 Toast.makeText(getApplicationContext(), "Image Uploaded Successfully.",
                                         Toast.LENGTH_SHORT).show();
+                                File file = new File(selectedPhoto);
+                                boolean deleted = file.delete();
 
                             }
                             else{
