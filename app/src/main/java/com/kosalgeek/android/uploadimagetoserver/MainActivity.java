@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -144,6 +145,14 @@ public class MainActivity extends AppCompatActivity {
                                         Toast.LENGTH_SHORT).show();
                                 File file = new File(selectedPhoto);
                                 boolean deleted = file.delete();
+                                //sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,
+                                // Uri.parse(selectedPhoto + Environment.getExternalStorageDirectory())));
+
+                               /*En manifest: <intent-filter>
+                                <action android:name="android.intent.action.MEDIA_MOUNTED" />
+                                <data android:scheme="file" />
+                                </intent-filter>*/
+
 
                             }
                             else{
