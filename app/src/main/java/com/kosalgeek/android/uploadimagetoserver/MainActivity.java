@@ -145,6 +145,9 @@ public class MainActivity extends AppCompatActivity {
                                         Toast.LENGTH_SHORT).show();
                                 File file = new File(selectedPhoto);
                                 boolean deleted = file.delete();
+
+                                //sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" +  Environment.getExternalStorageDirectory())));
+
                                 //sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,
                                 // Uri.parse(selectedPhoto + Environment.getExternalStorageDirectory())));
 
@@ -152,15 +155,13 @@ public class MainActivity extends AppCompatActivity {
                                 <action android:name="android.intent.action.MEDIA_MOUNTED" />
                                 <data android:scheme="file" />
                                 </intent-filter>*/
-
-
                             }
                             else{
                                 Toast.makeText(getApplicationContext(), "Error while uploading.",
                                         Toast.LENGTH_SHORT).show();
-                            }
-                        }
+                            }                        }
                     });
+
 
                     //Para modificar la barra de ip en la pantalla inicial
                     String ip = etIpAddress.getText().toString();
